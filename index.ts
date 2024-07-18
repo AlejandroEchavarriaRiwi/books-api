@@ -1,172 +1,85 @@
-const domain: string = 'http://190.147.64.47:5155/';
-const endpointLogin: string = 'api/v1/auth/login';
-const endPointCreateBooks: string = 'api/v1/books';
-const endpointCreateUsers: string = 'api/v1/users';
-const endPointGetBooks: string = 'api/v1/books?limit=10&page=1';
+import { BooksController } from "./controllers/books.controller";
+import { BodyRequestCreateUser, RequestLoginBooks, ResponseLoginBooks, Book, BodyResponseBooks } from "./models/books.models";
 
-interface BodyRequestLogin {
-    email: string,
-    password: string
-}
-
-interface BodyRequestCreateUser {
-    name: string,
-    lastName: string,
-    email: string,
-    password: string,
-}
-
-interface BodyResponseLogin {
-    message: string,
-    data: {
-        token: string
-    }
-}
-
-interface Book {
-    title: string,
-    author: string,
-    description: string,
-    summary: string,
-    publicationDate: string
-}
-
-interface BodyResponseBooks {
-    message: string,
-    data: Book[]
-}
-
-async function postLogin(data: BodyRequestLogin): Promise<BodyResponseLogin> {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
+async function main(): Promise<void> {
+    const booksController: BooksController = new BooksController('http://190.147.64.47:5155');
+    
+    const dataToLogin: RequestLoginBooks = {
+        email: 'prueba@prueba.pru',
+        password: 'C0ntr4S3gu++r4'
     }
 
-    const reqOptions: RequestInit = {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(data)
-    }
-    const url = domain + endpointLogin;
-    const result: Response = await fetch(url, reqOptions);
+    try {
+        const resultLogin: ResponseLoginBooks = await booksController.postLogin(dataToLogin);
+        console.log(resultLogin);
 
-    console.log(`Status code: ${result.status}`);
-    if (result.status !== 201) {
-        console.log(`Response body: ${(await result.json()).message}`);
-        throw new Error('Not authenticated: ');
-    }
-    const responseBodyLogin: BodyResponseLogin = await result.json();
-    console.log(`Result token: ${responseBodyLogin.data.token}`);
-    return responseBodyLogin;
-}
+        const token = resultLogin.data.token;
 
-async function createUser(user: BodyRequestCreateUser, token: string): Promise<void> {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-    }
+        // Get books
+        try {
+            const booksResponse: BodyResponseBooks = await booksController.getBooks(token);
+            console.log('Books:', booksResponse.data);
+        } catch (error) {
+            console.log(`Error fetching books: ${error}`);
+        }
 
-    const reqOptions: RequestInit = {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(user)
-    }
-    const url = domain + endpointCreateUsers;
-    const result: Response = await fetch(url, reqOptions);
+        // Create user
+        const newUser: BodyRequestCreateUser = {
+            name: 'Alejandro',
+            lastName: 'Echavarria',
+            email: 'aec45754j@gmail.com',
+            password: 'S3cur3P@ssw0rd',
+        };
 
-    console.log(`Status code: ${result.status}`);
-    if (result.status !== 201) {
-        console.log(`Response body: ${(await result.json()).message}`);
-        throw new Error('Failed to create user');
-    }
-    console.log('User created successfully');
-}
-
-async function createBook(book: Book, token: string): Promise<void> {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-    }
-
-    const reqOptions: RequestInit = {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(book)
-    }
-    const url = domain + endPointCreateBooks;
-    const result: Response = await fetch(url, reqOptions);
-
-    console.log(`Status code: ${result.status}`);
-    if (result.status !== 201) {
-        console.log(`Response body: ${(await result.json()).message}`);
-        throw new Error('Failed to create book');
-    }
-    console.log('Book created successfully');
-}
-
-async function getBooks(token: string): Promise<BodyResponseBooks> {
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-    }
-
-    const reqOptions: RequestInit = {
-        method: 'GET',
-        headers: headers
-    }
-    const url = domain + endPointGetBooks;
-    const result: Response = await fetch(url, reqOptions);
-
-    console.log(`Status code: ${result.status}`);
-    if (result.status !== 200) {
-        console.log(`Response body: ${(await result.json()).message}`);
-        throw new Error('Failed to get books');
-    }
-    const responseBodyBooks: BodyResponseBooks = await result.json();
-    console.log('Books fetched successfully');
-    return responseBodyBooks;
-}
-
-const dataToLogin: BodyRequestLogin = {
-    email: 'prueba@prueba.pru',
-    password: 'C0ntr4S3gu++r4'
-}
-
-postLogin(dataToLogin).then((result: BodyResponseLogin) => {
-    console.log(result);
-    const token = result.data.token;
-
-    getBooks(token).then((booksResponse: BodyResponseBooks) => {
-        console.log('Books:', booksResponse.data);
-    }).catch((error) => {
-        console.log(`Error fetching books: ${error}`);
-    });
-
-    const newUser: BodyRequestCreateUser = {
-        name: 'Alejandro',
-        lastName: 'Echavarria',
-        email: 'aechavarriaj@gmail.com',
-        password: 'S3cur3P@ssw0rd',
-    };
-
-    createUser(newUser, token).then(() => {
-        console.log('User creation succeeded');
-
+        try {
+            await booksController.createUser(newUser, token);
+            console.log('User creation succeeded');
+        } catch (error) {
+            console.log(`Error creating user: ${error}`);
+        }
+        // Create book
         const newBook: Book = {
-            title: 'Nuevo Libro',
+            title: 'Nuevo Libro DE RIWI',
             author: 'Autor del Libro',
             description: '',
             summary: '',
             publicationDate: "2024-07-17T13:01:11.7542"
         };
 
-        createBook(newBook, token).then(() => {
+        try {
+            await booksController.createBook(newBook, token);
             console.log('Book creation succeeded');
-        }).catch((error) => {
+        } catch (error) {
             console.log(`Error creating book: ${error}`);
-        });
-    }).catch((error) => {
-        console.log(`Error creating user: ${error}`);
-    });
-}).catch((error) => {
-    console.log(`Error logging in: ${error}`);
-});
+        }
+
+        // Update a book
+        const bookIdToUpdate = 'd8300a49-3ae7-4150-844c-b0aad39b31f0';
+        const bookUpdate: Partial<Book> = {
+            title: 'El libro de riwi recharged',
+            description: 'Vida y lucha'
+        };
+        try {
+            await booksController.updateBook(bookIdToUpdate, bookUpdate, token);
+            console.log('Book update succeeded');
+        } catch (error) {
+            console.log(`Error updating book: ${error}`);
+        }
+
+        // Delete a book
+        const bookIdToDelete = '8a6b2b57-e7c9-4793-8b83-034ef904b17b'; 
+        try {
+            console.log(`Attempting to delete book with ID: ${bookIdToDelete}`);
+            await booksController.deleteBook(bookIdToDelete, token);
+            console.log('Book deletion succeeded');
+        } catch (error) {
+            console.error(`Error deleting book:`, error);
+        }
+
+
+    } catch (error) {
+        console.log(`Error logging in: ${error}`);
+    }
+}
+
+main();

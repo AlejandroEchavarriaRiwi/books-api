@@ -1,0 +1,40 @@
+li{
+    cursor: pointer;
+    list-style: none;
+}
+
+ul{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 50px;
+}
+
+h1{
+    margin-top: 60px;
+    text-align: center;
+}
+.formContainer form{
+    width: 60vw;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.formContainer{
+    display: flex;
+    justify-content: center;
+}
+
+form input{
+    border-radius: 8px;
+    border: 1px solid gray;
+}
+
+form button{
+    align-self: center;
+    background-color: aquamarine;
+    border-radius: 8px;
+    border: 0px;
+    padding: 10px 30px;
+}
