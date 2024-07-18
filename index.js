@@ -12,6 +12,7 @@ const domain = 'http://190.147.64.47:5155/';
 const endpointLogin = 'api/v1/auth/login';
 const endPointCreateBooks = 'api/v1/books';
 const endpointCreateUsers = 'api/v1/users';
+const endPointGetBooks = 'api/v1/books?limit=10&page=1';
 function postLogin(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const headers = {
@@ -76,6 +77,28 @@ function createBook(book, token) {
         console.log('Book created successfully');
     });
 }
+function getBooks(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const reqOptions = {
+            method: 'GET',
+            headers: headers
+        };
+        const url = domain + endPointGetBooks;
+        const result = yield fetch(url, reqOptions);
+        console.log(`Status code: ${result.status}`);
+        if (result.status !== 200) {
+            console.log(`Response body: ${(yield result.json()).message}`);
+            throw new Error('Failed to get books');
+        }
+        const responseBodyBooks = yield result.json();
+        console.log('Books fetched successfully');
+        return responseBodyBooks;
+    });
+}
 const dataToLogin = {
     email: 'prueba@prueba.pru',
     password: 'C0ntr4S3gu++r4'
@@ -83,6 +106,11 @@ const dataToLogin = {
 postLogin(dataToLogin).then((result) => {
     console.log(result);
     const token = result.data.token;
+    getBooks(token).then((booksResponse) => {
+        console.log('Books:', booksResponse.data);
+    }).catch((error) => {
+        console.log(`Error fetching books: ${error}`);
+    });
     const newUser = {
         name: 'Alejandro',
         lastName: 'Echavarria',

@@ -2,6 +2,7 @@ const domain: string = 'http://190.147.64.47:5155/';
 const endpointLogin: string = 'api/v1/auth/login';
 const endPointCreateBooks: string = 'api/v1/books';
 const endpointCreateUsers: string = 'api/v1/users';
+const endPointGetBooks: string = 'api/v1/books?limit=10&page=1';
 
 interface BodyRequestLogin {
     email: string,
@@ -28,6 +29,11 @@ interface Book {
     description: string,
     summary: string,
     publicationDate: string
+}
+
+interface BodyResponseBooks {
+    message: string,
+    data: Book[]
 }
 
 async function postLogin(data: BodyRequestLogin): Promise<BodyResponseLogin> {
@@ -97,6 +103,29 @@ async function createBook(book: Book, token: string): Promise<void> {
     console.log('Book created successfully');
 }
 
+async function getBooks(token: string): Promise<BodyResponseBooks> {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    }
+
+    const reqOptions: RequestInit = {
+        method: 'GET',
+        headers: headers
+    }
+    const url = domain + endPointGetBooks;
+    const result: Response = await fetch(url, reqOptions);
+
+    console.log(`Status code: ${result.status}`);
+    if (result.status !== 200) {
+        console.log(`Response body: ${(await result.json()).message}`);
+        throw new Error('Failed to get books');
+    }
+    const responseBodyBooks: BodyResponseBooks = await result.json();
+    console.log('Books fetched successfully');
+    return responseBodyBooks;
+}
+
 const dataToLogin: BodyRequestLogin = {
     email: 'prueba@prueba.pru',
     password: 'C0ntr4S3gu++r4'
@@ -106,6 +135,11 @@ postLogin(dataToLogin).then((result: BodyResponseLogin) => {
     console.log(result);
     const token = result.data.token;
 
+    getBooks(token).then((booksResponse: BodyResponseBooks) => {
+        console.log('Books:', booksResponse.data);
+    }).catch((error) => {
+        console.log(`Error fetching books: ${error}`);
+    });
 
     const newUser: BodyRequestCreateUser = {
         name: 'Alejandro',
