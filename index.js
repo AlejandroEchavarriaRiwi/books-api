@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const domain = 'http://190.147.64.47:5155/';
 const endpointLogin = 'api/v1/auth/login';
 const endPointCreateBooks = 'api/v1/books';
+const endpointCreateUsers = 'api/v1/users';
 function postLogin(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const headers = {
@@ -31,6 +32,27 @@ function postLogin(data) {
         const responseBodyLogin = yield result.json();
         console.log(`Result token: ${responseBodyLogin.data.token}`);
         return responseBodyLogin;
+    });
+}
+function createUser(user, token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const reqOptions = {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(user)
+        };
+        const url = domain + endpointCreateUsers;
+        const result = yield fetch(url, reqOptions);
+        console.log(`Status code: ${result.status}`);
+        if (result.status !== 201) {
+            console.log(`Response body: ${(yield result.json()).message}`);
+            throw new Error('Failed to create user');
+        }
+        console.log('User created successfully');
     });
 }
 function createBook(book, token) {
@@ -61,17 +83,28 @@ const dataToLogin = {
 postLogin(dataToLogin).then((result) => {
     console.log(result);
     const token = result.data.token;
-    const newBook = {
-        title: 'Nuevo Libro',
-        author: 'Autor del Libro',
-        description: '',
-        summary: '',
-        publicationDate: "2024-07-17T13:01:11.7542"
+    const newUser = {
+        name: 'Alejandro',
+        lastName: 'Echavarria',
+        email: 'aechavarriaj@gmail.com',
+        password: 'S3cur3P@ssw0rd',
     };
-    createBook(newBook, token).then(() => {
-        console.log('Book creation succeeded');
+    createUser(newUser, token).then(() => {
+        console.log('User creation succeeded');
+        const newBook = {
+            title: 'Nuevo Libro',
+            author: 'Autor del Libro',
+            description: '',
+            summary: '',
+            publicationDate: "2024-07-17T13:01:11.7542"
+        };
+        createBook(newBook, token).then(() => {
+            console.log('Book creation succeeded');
+        }).catch((error) => {
+            console.log(`Error creating book: ${error}`);
+        });
     }).catch((error) => {
-        console.log(`Error creating book: ${error}`);
+        console.log(`Error creating user: ${error}`);
     });
 }).catch((error) => {
     console.log(`Error logging in: ${error}`);

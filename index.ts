@@ -1,10 +1,18 @@
 const domain: string = 'http://190.147.64.47:5155/';
 const endpointLogin: string = 'api/v1/auth/login';
 const endPointCreateBooks: string = 'api/v1/books';
+const endpointCreateUsers: string = 'api/v1/users';
 
 interface BodyRequestLogin {
     email: string,
     password: string
+}
+
+interface BodyRequestCreateUser {
+    name: string,
+    lastName: string,
+    email: string,
+    password: string,
 }
 
 interface BodyResponseLogin {
@@ -45,6 +53,28 @@ async function postLogin(data: BodyRequestLogin): Promise<BodyResponseLogin> {
     return responseBodyLogin;
 }
 
+async function createUser(user: BodyRequestCreateUser, token: string): Promise<void> {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    }
+
+    const reqOptions: RequestInit = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(user)
+    }
+    const url = domain + endpointCreateUsers;
+    const result: Response = await fetch(url, reqOptions);
+
+    console.log(`Status code: ${result.status}`);
+    if (result.status !== 201) {
+        console.log(`Response body: ${(await result.json()).message}`);
+        throw new Error('Failed to create user');
+    }
+    console.log('User created successfully');
+}
+
 async function createBook(book: Book, token: string): Promise<void> {
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -76,18 +106,32 @@ postLogin(dataToLogin).then((result: BodyResponseLogin) => {
     console.log(result);
     const token = result.data.token;
 
-    const newBook: Book = {
-        title: 'Nuevo Libro',
-        author: 'Autor del Libro',
-        description : '',
-        summary: '',
-        publicationDate: "2024-07-17T13:01:11.7542"
+
+    const newUser: BodyRequestCreateUser = {
+        name: 'Alejandro',
+        lastName: 'Echavarria',
+        email: 'aechavarriaj@gmail.com',
+        password: 'S3cur3P@ssw0rd',
     };
 
-    createBook(newBook, token).then(() => {
-        console.log('Book creation succeeded');
+    createUser(newUser, token).then(() => {
+        console.log('User creation succeeded');
+
+        const newBook: Book = {
+            title: 'Nuevo Libro',
+            author: 'Autor del Libro',
+            description: '',
+            summary: '',
+            publicationDate: "2024-07-17T13:01:11.7542"
+        };
+
+        createBook(newBook, token).then(() => {
+            console.log('Book creation succeeded');
+        }).catch((error) => {
+            console.log(`Error creating book: ${error}`);
+        });
     }).catch((error) => {
-        console.log(`Error creating book: ${error}`);
+        console.log(`Error creating user: ${error}`);
     });
 }).catch((error) => {
     console.log(`Error logging in: ${error}`);
