@@ -27,7 +27,7 @@ async function main(): Promise<void> {
         const newUser: BodyRequestCreateUser = {
             name: 'Alejandro',
             lastName: 'Echavarria',
-            email: 'aec45754j@gmail.com',
+            email: 'aec45849848754j@gmail.com',
             password: 'S3cur3P@ssw0rd',
         };
 
@@ -39,7 +39,7 @@ async function main(): Promise<void> {
         }
         // Create book
         const newBook: Book = {
-            title: 'Nuevo Libro DE RIWI',
+            title: 'Nuevo Libro DE RIWI gates',
             author: 'Autor del Libro',
             description: '',
             summary: '',
@@ -54,7 +54,7 @@ async function main(): Promise<void> {
         }
 
         // Update a book
-        const bookIdToUpdate = 'd8300a49-3ae7-4150-844c-b0aad39b31f0';
+        const bookIdToUpdate = 'c0bfd373-ee5b-4161-bd21-5dadaee33b9b';
         const bookUpdate: Partial<Book> = {
             title: 'El libro de riwi recharged',
             description: 'Vida y lucha'
@@ -67,7 +67,7 @@ async function main(): Promise<void> {
         }
 
         // Delete a book
-        const bookIdToDelete = '8a6b2b57-e7c9-4793-8b83-034ef904b17b'; 
+        const bookIdToDelete = '12fec388-ff8c-49d6-9366-91e3e30ded6b'; 
         try {
             console.log(`Attempting to delete book with ID: ${bookIdToDelete}`);
             await booksController.deleteBook(bookIdToDelete, token);
