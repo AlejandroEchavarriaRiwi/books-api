@@ -42,14 +42,6 @@ function main() {
             }
             // Delete a book
             const bookIdToDelete = '12fec388-ff8c-49d6-9366-91e3e30ded6b';
-            try {
-                console.log(`Attempting to delete book with ID: ${bookIdToDelete}`);
-                yield booksController.deleteBook(bookIdToDelete, token);
-                console.log('Book deletion succeeded');
-            }
-            catch (error) {
-                console.error(`Error deleting book:`, error);
-            }
         }
         catch (error) {
             console.log(`Error logging in: ${error}`);

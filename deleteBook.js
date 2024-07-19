@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { BooksController } from "./controllers/books.controller.js";
 document.addEventListener('DOMContentLoaded', () => {
-    const searchForm = document.getElementById('searchForm');
-    const editForm = document.getElementById('editForm');
+    const deleteForm = document.getElementById('deleteForm');
     const booksController = new BooksController('http://190.147.64.47:5155');
     let token;
+    let bookIdToDelete;
     function login() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -42,64 +42,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    function populateForm(book) {
-        console.log('Populating form with book:', book);
-        document.getElementById('bookId').value = book.id;
-        document.getElementById('title').value = book.title;
-        document.getElementById('author').value = book.author;
-        document.getElementById('description').value = book.description || '';
-        document.getElementById('summary').value = book.summary || '';
-        document.getElementById('publicationDate').value = book.publicationDate.split('T')[0];
-        editForm.style.display = 'flex';
-        editForm.reset();
-        editForm.style.flexDirection = "column";
-    }
-    searchForm.addEventListener('submit', (ev) => __awaiter(void 0, void 0, void 0, function* () {
+    deleteForm.addEventListener('submit', (ev) => __awaiter(void 0, void 0, void 0, function* () {
         ev.preventDefault();
-        const searchTitle = document.getElementById('searchTitle').value;
-        console.log('Search initiated for:', searchTitle);
+        const searchDeleteTitle = document.getElementById('searchDeleteTitle').value;
+        console.log('Search initiated for:', searchDeleteTitle);
         try {
             if (!token) {
-                console.log('No token, logging in...');
                 yield login();
             }
-            const book = yield searchBook(searchTitle);
+            const book = yield searchBook(searchDeleteTitle);
             if (book) {
                 console.log('Book found:', book);
-                searchForm.style.display = 'none';
-                populateForm(book);
+                bookIdToDelete = book.id;
+                try {
+                    console.log(`Attempting to delete book with ID: ${bookIdToDelete}`);
+                    yield booksController.deleteBook(bookIdToDelete, token);
+                    deleteForm.reset();
+                    alert('Book deletion succeeded');
+                }
+                catch (error) {
+                    console.error(`Error deleting book:`, error);
+                }
             }
             else {
-                console.log('Book not found');
                 alert('Book not found');
             }
         }
         catch (error) {
             console.error('Error during search:', error);
             alert('An error occurred while searching for the book');
-        }
-    }));
-    editForm.addEventListener('submit', (event) => __awaiter(void 0, void 0, void 0, function* () {
-        event.preventDefault();
-        const bookId = document.getElementById('bookId').value;
-        const updatedBook = {
-            title: document.getElementById('title').value,
-            author: document.getElementById('author').value,
-            description: document.getElementById('description').value,
-            summary: document.getElementById('summary').value,
-            publicationDate: document.getElementById('publicationDate').value
-        };
-        try {
-            yield booksController.updateBook(bookId, updatedBook, token);
-            console.log('Book update succeeded');
-            alert('Book updated successfully');
-            editForm.reset();
-            editForm.style.display = 'none';
-            searchForm.style.display = 'flex';
-        }
-        catch (error) {
-            console.error('Error updating book:', error);
-            alert('Error updating book');
         }
     }));
 });

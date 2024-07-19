@@ -91,6 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Book updated successfully');
             editForm.reset();
             editForm.style.display = 'none';
+            searchForm.style.display = 'flex';
+            
         } catch (error) {
             console.error('Error updating book:', error);
             alert('Error updating book');
