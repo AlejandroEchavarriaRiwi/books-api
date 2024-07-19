@@ -35,7 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Luego, crea el libro
             try {
                 yield booksController.createBook(newBook, token);
-                console.log('Book creation succeeded');
+                Swal.fire({
+                    title: 'Cool!',
+                    text: 'the book was successfully created',
+                    icon: 'success',
+                    confirmButtonText: 'Continue'
+                });
                 form.reset();
             }
             catch (error) {

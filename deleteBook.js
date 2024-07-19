@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     password: 'C0ntr4S3gu++r4'
                 });
                 token = loginResult.data.token;
-                console.log('Login successful');
             }
             catch (error) {
                 console.error('Login error:', error);
@@ -33,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const booksResponse = yield booksController.getBooks(token);
-                console.log('Books received:', booksResponse.data);
                 return booksResponse.data.find(book => book.title.toLowerCase().includes(searchTitle.toLowerCase()));
             }
             catch (error) {
@@ -45,27 +43,34 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteForm.addEventListener('submit', (ev) => __awaiter(void 0, void 0, void 0, function* () {
         ev.preventDefault();
         const searchDeleteTitle = document.getElementById('searchDeleteTitle').value;
-        console.log('Search initiated for:', searchDeleteTitle);
         try {
             if (!token) {
                 yield login();
             }
             const book = yield searchBook(searchDeleteTitle);
             if (book) {
-                console.log('Book found:', book);
                 bookIdToDelete = book.id;
                 try {
-                    console.log(`Attempting to delete book with ID: ${bookIdToDelete}`);
                     yield booksController.deleteBook(bookIdToDelete, token);
                     deleteForm.reset();
-                    alert('Book deletion succeeded');
+                    Swal.fire({
+                        title: 'Cool!',
+                        text: 'the book was successfully deleted',
+                        icon: 'success',
+                        confirmButtonText: 'Continue'
+                    });
                 }
                 catch (error) {
                     console.error(`Error deleting book:`, error);
                 }
             }
             else {
-                alert('Book not found');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'the book was not found',
+                    icon: 'warning',
+                    confirmButtonText: 'ok'
+                });
             }
         }
         catch (error) {
