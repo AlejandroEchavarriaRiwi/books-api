@@ -1,4 +1,4 @@
-import { BooksController } from "./controllers/books.controller";
+import { BooksController } from "./controllers/books.controller.js";
 import { BodyRequestCreateUser, RequestLoginBooks, ResponseLoginBooks, Book, BodyResponseBooks } from "./models/books.models";
 
 async function main(): Promise<void> {
@@ -21,36 +21,6 @@ async function main(): Promise<void> {
             console.log('Books:', booksResponse.data);
         } catch (error) {
             console.log(`Error fetching books: ${error}`);
-        }
-
-        // Create user
-        const newUser: BodyRequestCreateUser = {
-            name: 'Alejandro',
-            lastName: 'Echavarria',
-            email: 'aec45849848754j@gmail.com',
-            password: 'S3cur3P@ssw0rd',
-        };
-
-        try {
-            await booksController.createUser(newUser, token);
-            console.log('User creation succeeded');
-        } catch (error) {
-            console.log(`Error creating user: ${error}`);
-        }
-        // Create book
-        const newBook: Book = {
-            title: 'Nuevo Libro DE RIWI gates',
-            author: 'Autor del Libro',
-            description: '',
-            summary: '',
-            publicationDate: "2024-07-17T13:01:11.7542"
-        };
-
-        try {
-            await booksController.createBook(newBook, token);
-            console.log('Book creation succeeded');
-        } catch (error) {
-            console.log(`Error creating book: ${error}`);
         }
 
         // Update a book
