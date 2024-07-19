@@ -86,7 +86,7 @@ export class BooksController {
                 method: 'GET',
                 headers: headers
             };
-            const url = this.domain + '/api/v1/books?limit=10000&page=1';
+            const url = this.domain + '/api/v1/books?limit=1000&page=1';
             const result = yield fetch(url, reqOptions);
             console.log(`Status code: ${result.status}`);
             if (result.status !== 200) {
