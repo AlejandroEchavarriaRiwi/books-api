@@ -8,71 +8,83 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const domain = 'http://190.147.64.47:5155/';
-const endpointLogin = 'api/v1/auth/login';
-const endPointCreateBooks = 'api/v1/books';
-function postLogin(data) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const books_controller_1 = require("./controllers/books.controller");
+function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const headers = {
-            'Content-Type': 'application/json',
+        const booksController = new books_controller_1.BooksController('http://190.147.64.47:5155');
+        const dataToLogin = {
+            email: 'prueba@prueba.pru',
+            password: 'C0ntr4S3gu++r4'
         };
-        const reqOptions = {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(data)
-        };
-        const url = domain + endpointLogin;
-        const result = yield fetch(url, reqOptions);
-        console.log(`Status code: ${result.status}`);
-        if (result.status !== 201) {
-            console.log(`Response body: ${(yield result.json()).message}`);
-            throw new Error('Not authenticated: ');
+        try {
+            const resultLogin = yield booksController.postLogin(dataToLogin);
+            console.log(resultLogin);
+            const token = resultLogin.data.token;
+            // Get books
+            try {
+                const booksResponse = yield booksController.getBooks(token);
+                console.log('Books:', booksResponse.data);
+            }
+            catch (error) {
+                console.log(`Error fetching books: ${error}`);
+            }
+            // Create user
+            const newUser = {
+                name: 'Alejandro',
+                lastName: 'Echavarria',
+                email: 'aec45849848754j@gmail.com',
+                password: 'S3cur3P@ssw0rd',
+            };
+            try {
+                yield booksController.createUser(newUser, token);
+                console.log('User creation succeeded');
+            }
+            catch (error) {
+                console.log(`Error creating user: ${error}`);
+            }
+            // Create book
+            const newBook = {
+                title: 'Nuevo Libro DE RIWI gates',
+                author: 'Autor del Libro',
+                description: '',
+                summary: '',
+                publicationDate: "2024-07-17T13:01:11.7542"
+            };
+            try {
+                yield booksController.createBook(newBook, token);
+                console.log('Book creation succeeded');
+            }
+            catch (error) {
+                console.log(`Error creating book: ${error}`);
+            }
+            // Update a book
+            const bookIdToUpdate = 'c0bfd373-ee5b-4161-bd21-5dadaee33b9b';
+            const bookUpdate = {
+                title: 'El libro de riwi recharged',
+                description: 'Vida y lucha'
+            };
+            try {
+                yield booksController.updateBook(bookIdToUpdate, bookUpdate, token);
+                console.log('Book update succeeded');
+            }
+            catch (error) {
+                console.log(`Error updating book: ${error}`);
+            }
+            // Delete a book
+            const bookIdToDelete = '12fec388-ff8c-49d6-9366-91e3e30ded6b';
+            try {
+                console.log(`Attempting to delete book with ID: ${bookIdToDelete}`);
+                yield booksController.deleteBook(bookIdToDelete, token);
+                console.log('Book deletion succeeded');
+            }
+            catch (error) {
+                console.error(`Error deleting book:`, error);
+            }
         }
-        const responseBodyLogin = yield result.json();
-        console.log(`Result token: ${responseBodyLogin.data.token}`);
-        return responseBodyLogin;
+        catch (error) {
+            console.log(`Error logging in: ${error}`);
+        }
     });
 }
-function createBook(book, token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
-        const reqOptions = {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(book)
-        };
-        const url = domain + endPointCreateBooks;
-        const result = yield fetch(url, reqOptions);
-        console.log(`Status code: ${result.status}`);
-        if (result.status !== 201) {
-            console.log(`Response body: ${(yield result.json()).message}`);
-            throw new Error('Failed to create book');
-        }
-        console.log('Book created successfully');
-    });
-}
-const dataToLogin = {
-    email: 'prueba@prueba.pru',
-    password: 'C0ntr4S3gu++r4'
-};
-postLogin(dataToLogin).then((result) => {
-    console.log(result);
-    const token = result.data.token;
-    const newBook = {
-        title: 'Nuevo Libro',
-        author: 'Autor del Libro',
-        description: '',
-        summary: '',
-        publicationDate: "2024-07-17T13:01:11.7542"
-    };
-    createBook(newBook, token).then(() => {
-        console.log('Book creation succeeded');
-    }).catch((error) => {
-        console.log(`Error creating book: ${error}`);
-    });
-}).catch((error) => {
-    console.log(`Error logging in: ${error}`);
-});
+main();
