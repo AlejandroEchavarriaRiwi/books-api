@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,9 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BooksController = void 0;
-class BooksController {
+export class BooksController {
     constructor(urlApi) {
         this.urlApi = urlApi;
         this.domain = urlApi;
@@ -34,7 +31,6 @@ class BooksController {
                 throw new Error('Not authenticated: ');
             }
             const responseBodyLogin = yield result.json();
-            console.log(`Result token: ${responseBodyLogin.data.token}`);
             return responseBodyLogin;
         });
     }
@@ -90,7 +86,7 @@ class BooksController {
                 method: 'GET',
                 headers: headers
             };
-            const url = this.domain + '/api/v1/books?limit=10&page=1';
+            const url = this.domain + '/api/v1/books?limit=1000&page=1';
             const result = yield fetch(url, reqOptions);
             console.log(`Status code: ${result.status}`);
             if (result.status !== 200) {
@@ -148,4 +144,3 @@ class BooksController {
         });
     }
 }
-exports.BooksController = BooksController;
