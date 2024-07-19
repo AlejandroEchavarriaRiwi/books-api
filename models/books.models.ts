@@ -18,6 +18,7 @@ export interface ResponseLoginBooks {
 }
 
 export interface Book {
+    [x: string]: string
     title: string,
     author: string,
     description: string,
