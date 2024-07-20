@@ -1,4 +1,5 @@
 import { BooksController } from "./controllers/books.controller.js";
+declare const Swal: any;
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm') as HTMLFormElement;
@@ -29,12 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Luego, crea el usuario
             await booksController.createUser(newUser, token);
-            console.log('User creation succeeded');
-            alert('User registered successfully!');
+            Swal.fire({
+                title: 'Cool!',
+                text: 'the user was successfully created',
+                icon: 'success',
+                confirmButtonText: 'Continue'
+            })
             form.reset();
         } catch (error) {
-            console.error('Error creating user:', error);
-            alert('Error registering user. Please try again.');
+            Swal.fire({
+                title: 'Error',
+                text: 'Error registering user. Please try again.',
+                icon: 'warning',
+                confirmButtonText: 'ok'
+            });
         }
     });
 });

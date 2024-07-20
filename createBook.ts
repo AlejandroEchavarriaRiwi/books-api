@@ -1,8 +1,10 @@
 import { BooksController } from "./controllers/books.controller.js";
 import { Book } from "./models/books.models.js";
+declare const Swal: any;
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('bookForm') as HTMLFormElement;
+    
     const booksController = new BooksController('http://190.147.64.47:5155');
 
     form.addEventListener('submit', async (event) => {
@@ -19,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             author: author.value,
             description: description.value,
             summary: summary.value,
-            publicationDate: publicationDate.value 
+            publicationDate: publicationDate.value
         };
 
         try {
@@ -33,12 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Luego, crea el libro
             try {
                 await booksController.createBook(newBook, token);
-                console.log('Book creation succeeded');
+                Swal.fire({
+                    title: 'Cool!',
+                    text: 'the book was successfully created',
+                    icon: 'success',
+                    confirmButtonText: 'Continue'
+                })
                 form.reset();
             } catch (error) {
                 console.log(`Error creating book: ${error}`);
             }
-        }catch (error) {
+        } catch (error) {
             console.log(`Error logging in: ${error}`);
         }
     });

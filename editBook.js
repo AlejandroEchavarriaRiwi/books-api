@@ -37,7 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return booksResponse.data.find(book => book.title.toLowerCase().includes(searchTitle.toLowerCase()));
             }
             catch (error) {
-                console.error('Error fetching books:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'the book was not found',
+                    icon: 'warning',
+                    confirmButtonText: 'ok'
+                });
                 throw error;
             }
         });
@@ -65,18 +70,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const book = yield searchBook(searchTitle);
             if (book) {
-                console.log('Book found:', book);
                 searchForm.style.display = 'none';
                 populateForm(book);
             }
             else {
-                console.log('Book not found');
-                alert('Book not found');
+                Swal.fire({
+                    title: 'Error',
+                    text: 'the book was not found',
+                    icon: 'warning',
+                    confirmButtonText: 'ok'
+                });
             }
         }
         catch (error) {
-            console.error('Error during search:', error);
-            alert('An error occurred while searching for the book');
+            Swal.fire({
+                title: 'Error',
+                text: 'the book was not found',
+                icon: 'warning',
+                confirmButtonText: 'ok'
+            });
         }
     }));
     editForm.addEventListener('submit', (event) => __awaiter(void 0, void 0, void 0, function* () {
@@ -91,8 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         try {
             yield booksController.updateBook(bookId, updatedBook, token);
-            console.log('Book update succeeded');
-            alert('Book updated successfully');
+            Swal.fire({
+                title: 'Cool!',
+                text: 'the book was successfully deleted',
+                icon: 'success',
+                confirmButtonText: 'Continue'
+            });
             editForm.reset();
             editForm.style.display = 'none';
             searchForm.style.display = 'flex';
