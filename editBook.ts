@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await booksController.updateBook(bookId, updatedBook, token);
             Swal.fire({
                 title: 'Cool!',
-                text: 'the book was successfully deleted',
+                text: 'the book was successfully updated',
                 icon: 'success',
                 confirmButtonText: 'Continue'
             })
